@@ -11,6 +11,10 @@ func (u User) GetId() int {
 	return u.id
 }
 
+func (u *User) SetId(id int) {
+	u.id = id
+}
+
 type UserBuilder struct {
 	user User
 }
@@ -36,11 +40,6 @@ func (b *UserBuilder) Email(email string) *UserBuilder {
 
 func (b *UserBuilder) Cpf(cpf string) *UserBuilder {
 	b.user.cpf = cpf
-	return b
-}
-
-func (b *UserBuilder) Wallet(wallet *Wallet) *UserBuilder {
-	b.user.wallet = wallet
 	return b
 }
 
