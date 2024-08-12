@@ -2,15 +2,25 @@ package main
 
 import (
 	"fmt"
-
-	domain "github.com/waterkemper/my-finance/my-finance-domain/domain/entity"
+	"net/http"
+	"time"
 )
 
+func logMiddlweare(f func(w http.ResponseWriter, r *http.Request)) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Printf("Logging from middlware")
+		f(w, r)
+	}
+}
+
 func main() {
-	println("My finance app.")
-	user := domain.UserBuilder{}.New().Email("rafaelwaterkemper@gmail.com").Build()
-	fmt.Println(user)
-	user2 := domain.User{}
-	user2.SetId(123)
-	fmt.Println(user2)
+	router := http.NewServeMux()
+	router.HandleFunc("GET /persons", logMiddlweare(func(w http.ResponseWriter, r *http.Request) {
+		time.Sleep(time.Second * 30)
+		w.Write([]byte("Test\n"))
+	}))
+	router.HandleFunc("GET /persons/items", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("Test concurrency\n"))
+	})
+	http.ListenAndServe("localhost:8080", router)
 }
